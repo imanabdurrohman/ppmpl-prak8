@@ -1,6 +1,9 @@
 pipeline {
     agent any
-    environment { CI = 'true' }
+    tools {
+        nodejs 'NodeJS' // Pastikan Node.js sudah terkonfigurasi di Jenkins
+        git 'Default'   // Pastikan Git sudah terkonfigurasi
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -9,28 +12,46 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                script {
+                    if (isUnix()) {
+                        sh 'npm install'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
             }
         }
         stage('Run Unit Tests') {
             steps {
-                sh 'npm test'
+                script {
+                    if (isUnix()) {
+                        sh 'npm test'
+                    } else {
+                        bat 'npm test'
+                    }
+                }
             }
         }
         stage('Build') {
             steps {
-                echo 'Building the application...'
+                script {
+                    if (isUnix()) {
+                        sh 'npm run build'
+                    } else {
+                        bat 'npm run build'
+                    }
+                }
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying the application...'
+                echo 'Deploying application...'
             }
         }
     }
     post {
-        success {
-            echo 'Pipeline finished successfully!'
+        always {
+            echo 'Pipeline completed!'
         }
         failure {
             echo 'Pipeline failed!'
