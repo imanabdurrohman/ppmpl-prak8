@@ -33,15 +33,15 @@ pipeline {
                 emailext (
                     subject: 'Build Succeeded', 
                     body: 'The build succeeded!', 
-                    to: '2200016112@webmail.uad.ac.id'
-    recipientProviders: [] )
+                    to: '2200016112@webmail.uad.ac.id',
+                    recipientProviders: [] )
         } 
         failure { 
                 emailext (
                     subject: 'Build Failed',
                     body: 'The build failed.', 
-                    to: '2200016112@webmail.uad.ac.id'
-    recipientProviders: []) 
+                    to: '2200016112@webmail.uad.ac.id',
+                    recipientProviders: []) 
         } 
     }
 }
