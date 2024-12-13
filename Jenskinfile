@@ -18,9 +18,6 @@ pipeline {
             }
         }
         stage('Run Integration Tests') {
-            when {
-                branch 'main'
-            }
             steps {
                 sh 'npm run test:integration'
             }
