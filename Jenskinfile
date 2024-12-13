@@ -17,6 +17,14 @@ pipeline {
                 sh 'npm test'
             }
         }
+        stage('Run Integration Tests') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh 'npm run test:integration'
+            }
+        }
         stage('Build') {
             steps {
                 echo 'Building the application...'
