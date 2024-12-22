@@ -4,7 +4,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/imanabdurrohman/ppmpl-prak8.git'
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        git branch: 'main', url: 'https://github.com/imanabdurrohman/ppmpl-prak8.git'
+                    } else if (env.BRANCH_NAME == 'develop') {
+                        git branch: 'develop', url: 'https://github.com/imanabdurrohman/ppmpl-prak8.git'
+                    }
+                }
             }
         }
         stage('Install Dependencies') {
@@ -27,26 +33,40 @@ pipeline {
                 echo 'Building the application...'
             }
         }
+        stage('Deploy to Staging') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                echo 'Deploying to staging server...'
+                sh 'scp -r ./build user@staging-server:/var/www/app'
+                sh 'ssh user@staging-server "systemctl restart app"'
+            }
+        }
         stage('Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
                 echo 'Deploying the application...'
+                // Add actual deployment steps here
             }
         }
     }
     post { 
         success { 
-                emailext (
-                    subject: 'Build Succeeded', 
-                    body: 'The build succeeded!', 
-                    to: '2200016112@webmail.uad.ac.id',
-                    recipientProviders: [] )
+            emailext (
+                subject: 'Build Succeeded', 
+                body: 'The build succeeded!', 
+                to: '2200016112@webmail.uad.ac.id',
+                recipientProviders: [] )
         } 
         failure { 
-                emailext (
-                    subject: 'Build Failed',
-                    body: 'The build failed.', 
-                    to: '2200016112@webmail.uad.ac.id',
-                    recipientProviders: []) 
+            emailext (
+                subject: 'Build Failed',
+                body: 'The build failed.', 
+                to: '2200016112@webmail.uad.ac.id',
+                recipientProviders: []) 
         } 
     }
 }
