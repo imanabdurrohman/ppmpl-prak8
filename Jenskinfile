@@ -5,9 +5,10 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    def branch = env.BRANCH_NAME ?: env.GIT_BRANCH
+                    if (branch == 'main') {
                         git branch: 'main', url: 'https://github.com/imanabdurrohman/ppmpl-prak8.git'
-                    } else if (env.BRANCH_NAME == 'develop') {
+                    } else if (branch == 'develop') {
                         git branch: 'develop', url: 'https://github.com/imanabdurrohman/ppmpl-prak8.git'
                     }
                 }
@@ -30,6 +31,7 @@ pipeline {
         }
         stage('Build') {
             steps {
+                sh 'npm run build'
                 echo 'Building the application...'
             }
         }
@@ -43,30 +45,45 @@ pipeline {
                 sh 'ssh user@staging-server "systemctl restart app"'
             }
         }
-        stage('Deploy') {
+        stage('Deploy to Production') {
             when {
                 branch 'main'
             }
             steps {
-                echo 'Deploying the application...'
-                // Add actual deployment steps here
+                echo 'Deploying the application to production...'
+                sh 'scp -r ./build user@production-server:/var/www/app'
+                sh 'ssh user@production-server "systemctl restart app"'
             }
         }
     }
     post { 
         success { 
             emailext (
-                subject: 'Build Succeeded', 
-                body: 'The build succeeded!', 
+                subject: 'Build Succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]',
+                body: """The build succeeded!
+                        
+                        Job: ${env.JOB_NAME}
+                        Build: ${env.BUILD_NUMBER}
+                        Branch: ${env.BRANCH_NAME}
+                        
+                        Check the console output at ${env.BUILD_URL}""",
                 to: '2200016112@webmail.uad.ac.id',
-                recipientProviders: [] )
+                recipientProviders: []
+            )
         } 
         failure { 
             emailext (
-                subject: 'Build Failed',
-                body: 'The build failed.', 
+                subject: 'Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]',
+                body: """The build failed.
+                        
+                        Job: ${env.JOB_NAME}
+                        Build: ${env.BUILD_NUMBER}
+                        Branch: ${env.BRANCH_NAME}
+                        
+                        Check the console output at ${env.BUILD_URL}""",
                 to: '2200016112@webmail.uad.ac.id',
-                recipientProviders: []) 
+                recipientProviders: []
+            )
         } 
     }
 }
