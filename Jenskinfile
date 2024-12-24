@@ -1,9 +1,12 @@
 pipeline {
     agent any
-    environment { CI = 'true' }
+    environment { 
+        CI = 'true' 
+    }
     stages {
         stage('Checkout') {
-            script {
+            steps {
+                script {
                     def branch = env.BRANCH_NAME ?: env.GIT_BRANCH
                     if (branch == 'main') {
                         git branch: 'main', url: 'https://github.com/imanabdurrohman/ppmpl-prak8.git'
@@ -34,8 +37,8 @@ pipeline {
             }
         }
         stage('Deploy to Staging') {
-            when {
-                branch 'develop'
+            when { 
+                branch 'develop' 
             }
             steps {
                 echo 'Deploying to staging server...'
@@ -44,8 +47,8 @@ pipeline {
             }
         }
         stage('Deploy to Production') {
-            when {
-                branch 'main'
+            when { 
+                branch 'main' 
             }
             steps {
                 echo 'Deploying the application to production...'
@@ -60,14 +63,16 @@ pipeline {
                 subject: 'Build Succeeded', 
                 body: 'The build succeeded!', 
                 to: '2200016112@webmail.uad.ac.id',
-                recipientProviders: [] )
+                recipientProviders: [] 
+            )
         } 
         failure { 
             emailext (
                 subject: 'Build Failed',
                 body: 'The build failed.', 
                 to: '2200016112@webmail.uad.ac.id',
-                recipientProviders: []) 
+                recipientProviders: [] 
+            )
         } 
     }
 }
