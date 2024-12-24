@@ -39,28 +39,12 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'npm run build' // Ensure your build step creates a ./build directory
-                sh 'ls -l ./build' // Debug to check if the build directory exists
-            }
-        }
-        stage('Deploy to Staging') {
-            when {
-                branch 'develop'
-            }
-            steps {
-                echo 'Deploying to staging server...'
-                sh 'scp -v -r ./build user@staging-server:/var/www/app'
-                sh 'ssh user@staging-server "systemctl restart app"'
+            echo 'Building the application...'
             }
         }
         stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
             steps {
-                echo 'Deploying to production server...'
-                sh 'scp -v -r ./build user@production-server:/var/www/app'
-                sh 'ssh user@production-server "systemctl restart app"'
+                echo 'Simulating deployment to production...'
             }
         }
     }

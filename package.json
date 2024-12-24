@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:integration": "jest --testPathPattern=app.integration.test.js",
-    "build": "echo 'Building application...'"
+    "test:integration": "jest --testPathPattern=app.integration.test.js"
   },
   "keywords": [],
   "author": "",
