@@ -42,9 +42,9 @@ pipeline {
             echo 'Building the application...'
             }
         }
-        stage('Deploy to Production') {
+        stage('Deploy to Staging') {
             steps {
-                echo 'Simulating deployment to production...'
+                echo 'Simulating deployment to staging...'
             }
         }
     }
